@@ -1,0 +1,55 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Go build artifacts
+*.test
+*.out
+go-scratchpad
+
+# Go coverage files
+*.coverprofile
+coverage.txt
+coverage.html
+
+# Go workspace file
+go.work
+go.work.sum
+
+# Dependency directories
+vendor/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Claude Code artifacts
+.claude/
+
+# OS-specific files
+Thumbs.db
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+*.wav
+*.mp3
+*.mp4
+
+# Environment and secrets
+.env
+.env.local
+*.pem
+*.key
+!*.key.example

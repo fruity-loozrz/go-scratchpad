@@ -1,0 +1,21 @@
+version: '3'
+
+tasks:
+  play:
+    cmds:
+      - go run cmd/play/main.go
+
+  parser-check:
+    deps:
+      - parser-generate
+    cmds:
+      - go run cmd/parser-check/main.go
+
+  parser-generate:
+    dir: internal/automationparser
+    cmds:
+      - |
+          go run github.com/goccmack/gocc@latest \
+            -a \
+            -p github.com/fruity-loozrz/go-scratchpad/internal/automationparser \
+            ./automation.bnf
