@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/ebitengine/oto/v3"
-	"github.com/fruity-loozrz/go-scratchpad/internal/autofmt"
+	"github.com/fruity-loozrz/go-scratchpad/internal/automation"
 	"github.com/fruity-loozrz/go-scratchpad/internal/keyframes"
 	"github.com/fruity-loozrz/go-scratchpad/internal/ring"
 )
@@ -37,7 +37,12 @@ func main() {
 		log.Fatal(err)
 	}
 
-	kfs := autofmt.AutomationToKeyframes(string(automationBytes))
+	program, err := automation.Parse(string(automationBytes))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	kfs := program.ToKeyframes()
 
 	kfInterpolator, err := keyframes.NewKeyframeSequence(kfs)
 	if err != nil {
