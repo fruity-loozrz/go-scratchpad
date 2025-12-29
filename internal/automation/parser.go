@@ -94,7 +94,15 @@ func parseBpm(fields []string) (float64, bool) {
 }
 
 func parseLine(line string) (*action, error) {
+	if idx := strings.Index(line, "#"); idx != -1 {
+		line = line[:idx]
+	}
+
 	fields := strings.Fields(line)
+
+	if len(fields) == 0 {
+		return &action{actionType: actionTypeNone}, nil
+	}
 
 	if move, ok := parseMove(fields); ok {
 		return &action{
