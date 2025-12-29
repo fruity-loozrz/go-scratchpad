@@ -1,4 +1,4 @@
-package cmd
+package play
 
 import (
 	"fmt"
@@ -15,23 +15,25 @@ import (
 
 var automationFile string
 
-var playCmd = &cobra.Command{
-	Use:   "play [sound file]",
-	Short: "Play a sound file with automation",
-	Long:  `Play a sound file with automation from a specified automation file.`,
-	Args:  cobra.ExactArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
-		soundFile := args[0]
+func NewPlayCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "play [sound file]",
+		Short: "Play a sound file with automation",
+		Long:  `Play a sound file with automation from a specified automation file.`,
+		Args:  cobra.ExactArgs(1),
+		Run: func(cmd *cobra.Command, args []string) {
+			soundFile := args[0]
 
-		if err := runPlay(soundFile, automationFile); err != nil {
-			log.Fatal(err)
-		}
-	},
-}
+			if err := runPlay(soundFile, automationFile); err != nil {
+				log.Fatal(err)
+			}
+		},
+	}
 
-func init() {
-	playCmd.Flags().StringVarP(&automationFile, "automation", "a", "", "automation file (required)")
-	playCmd.MarkFlagRequired("automation")
+	cmd.Flags().StringVarP(&automationFile, "automation", "a", "", "automation file (required)")
+	cmd.MarkFlagRequired("automation")
+
+	return cmd
 }
 
 func createPlate(fileName string) (*ring.Ring, error) {

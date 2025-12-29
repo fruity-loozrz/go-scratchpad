@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"github.com/fruity-loozrz/go-scratchpad/cmd/keyframes"
+	"github.com/fruity-loozrz/go-scratchpad/cmd/play"
 	"github.com/spf13/cobra"
 )
 
@@ -15,5 +17,6 @@ func Execute() error {
 }
 
 func init() {
-	rootCmd.AddCommand(playCmd)
+	rootCmd.AddCommand(play.NewPlayCmd())
+	rootCmd.AddCommand(keyframes.NewKeyframesCmd())
 }
