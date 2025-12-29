@@ -1,13 +1,25 @@
 version: '3'
 
 tasks:
+  desc: "build scratchpad"
   build:
     cmds:
       - mkdir -p dist/debug
       - go build -o dist/debug/scratchpad .
 
   run:
+    desc: "run scratchpad"
     deps:
       - build
     cmds:
       - ./dist/debug/scratchpad {{.CLI_ARGS}}
+
+  example-orc-1:
+    desc: "example: orchestra hit figure 1"
+    deps:
+      - build
+    cmds:
+      - |
+        ./dist/debug/scratchpad play \
+          -a ./audio/orchectra-hit/figure-1.auto.txt \
+          ./audio/orchectra-hit/822403__astro_denticle__gm-orch-hit-sinfonietta-op.wav

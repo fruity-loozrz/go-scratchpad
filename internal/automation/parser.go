@@ -25,8 +25,9 @@ const (
 )
 
 const (
-	bpmToken   = "bpm"
-	defaultBpm = 140.0
+	bpmToken     = "bpm"
+	defaultBpm   = 140.0
+	equalToken   = "="
 )
 
 type action struct {
@@ -74,6 +75,15 @@ func parseMove(fields []string) (*Move, bool) {
 
 	if len(fields) == 1 {
 		return &Move{Dh: dh, Dt: 1.0}, true
+	}
+
+	// Handle equal sign: Dt = Abs(Dh)
+	if fields[1] == equalToken {
+		dt := dh
+		if dt < 0 {
+			dt = -dt
+		}
+		return &Move{Dh: dh, Dt: dt}, true
 	}
 
 	dt, ok := parseReal(fields[1])

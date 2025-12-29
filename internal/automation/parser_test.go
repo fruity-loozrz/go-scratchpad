@@ -88,3 +88,32 @@ func TestParserWithComments(t *testing.T) {
 			},
 		}, program)
 }
+
+func TestParserWithEqualSign(t *testing.T) {
+	// Equal sign is only valid for Dt field
+	// It means: Dt = Abs(Dh)
+	program, err := automation.Parse(`
+1/2
+1/2 1
+1/2 2
+1/2 =
+- =
+-1/2 =
+-2 =
+	`)
+	require := require.New(t)
+	require.NoError(err)
+	require.Equal(
+		&automation.Program{
+			Bpm: 140,
+			Moves: []automation.Move{
+				{Dh: 0.5, Dt: 1},
+				{Dh: 0.5, Dt: 1},
+				{Dh: 0.5, Dt: 2},
+				{Dh: 0.5, Dt: 0.5},
+				{Dh: -1, Dt: 1},
+				{Dh: -0.5, Dt: 0.5},
+				{Dh: -2, Dt: 2},
+			},
+		}, program)
+}
