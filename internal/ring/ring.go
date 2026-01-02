@@ -1,89 +1,106 @@
 package ring
 
 import (
-	"fmt"
+	"encoding/binary"
+	"errors"
 	"io"
-	"log"
+	"math"
 	"os"
 	"time"
 
-	"github.com/go-audio/wav"
+	"github.com/youpy/go-wav"
 )
 
+const SizeofFloat32 = 4
+
+var ErrInvalidBufferSize = errors.New("invalid buffer size")
+
 type Ring struct {
-	buffer            []int
-	sampleRate        int
-	sampleDuration    float64
-	totalPlaybackTime float64
-	headPositionFn    func(float64) float64
-	maxDuration       float64
+	buffer     []float64
+	sampleRate uint32
+
+	realTime float64
+	// head position in seconds
+	headPositionFn func(float64) float64
+
+	// buffer            []int
+	// bytesPerSample    int
+	// sampleDuration    float64
+	maxDuration float64
 }
 
 func NewRingFromWav(file *os.File) (*Ring, error) {
-	decoder := wav.NewDecoder(file)
-	if !decoder.IsValidFile() {
-		return nil, fmt.Errorf("invalid WAV file")
-	}
+	ring := &Ring{}
 
-	buf, err := decoder.FullPCMBuffer()
+	reader := wav.NewReader(file)
+	format, err := reader.Format()
 	if err != nil {
 		return nil, err
 	}
 
-	numChannels := int(decoder.Format().NumChannels)
-	bitDepth := int(decoder.SampleBitDepth())
+	ring.sampleRate = format.SampleRate
 
-	if numChannels != 1 {
-		return nil, fmt.Errorf("error: audio must be mono (1 channel), got %d channels", numChannels)
+	for {
+		samples, err := reader.ReadSamples()
+		if err == io.EOF {
+			break
+		} else if err != nil {
+			return nil, err
+		}
+		for _, sample := range samples {
+			// TODO: support stereo
+			fSample := reader.FloatValue(sample, 0)
+			ring.buffer = append(ring.buffer, fSample)
+		}
 	}
-	if bitDepth != 16 {
-		return nil, fmt.Errorf("error: audio must be 16-bit, got %d-bit", bitDepth)
-	}
 
-	sampleRate := int(decoder.Format().SampleRate)
-
-	log.Printf("Channels: %d, Sample Rate: %d Hz, Bit Depth: %d\n", numChannels, sampleRate, bitDepth)
-	log.Printf("Playing %d samples...\n", len(buf.Data))
-
-	return &Ring{
-		buffer:         buf.Data,
-		sampleRate:     sampleRate,
-		sampleDuration: 1.0 / float64(sampleRate),
-	}, nil
+	return ring, nil
 }
 
-func (r *Ring) timeToSample(t float64) int {
-	bufLen := len(r.buffer)
-	i := int(t*float64(r.sampleRate)) % bufLen
-	if i < 0 {
-		i += bufLen
+func (r *Ring) getSampleAtTime(t float64) float64 {
+	// TODO: support stereo
+	// TODO: consider interpolation
+	sampleNum := int(t * float64(r.sampleRate))
+	for sampleNum < 0 {
+		sampleNum += len(r.buffer)
 	}
-	return i
-}
-
-func (r *Ring) getSampleByTime(t float64) int {
-	return r.buffer[r.timeToSample(t)]
+	sampleNum %= len(r.buffer)
+	return r.buffer[sampleNum]
 }
 
 func (r *Ring) Read(buf []byte) (int, error) {
-	bufLen := len(buf)
-	// TODO: unhardcode the 2
-	for i := 0; i < bufLen; i += 2 {
-		r.totalPlaybackTime += r.sampleDuration
-		if r.totalPlaybackTime >= r.maxDuration {
-			return i, io.EOF
-		}
-		headPositionTime := r.headPositionFn(r.totalPlaybackTime)
-		sample := r.getSampleByTime(headPositionTime)
-		buf[i] = byte(sample)
-		buf[i+1] = byte(sample >> 8)
+	// reader MUST read float32 samples
+	if len(buf)%SizeofFloat32 != 0 {
+		return 0, ErrInvalidBufferSize
 	}
-	return bufLen, nil
+	if r.realTime > r.maxDuration {
+		return 0, io.EOF
+	}
+
+	bytesRequested := len(buf)
+	samplesRequested := bytesRequested / SizeofFloat32
+	bytesRead := 0
+
+	for i := 0; i < samplesRequested; i++ {
+		headTime := r.headPositionFn(r.realTime)
+		sample := r.getSampleAtTime(headTime)
+
+		binary.LittleEndian.PutUint32(
+			buf[i*SizeofFloat32:],
+			math.Float32bits(float32(sample)),
+		)
+		bytesRead += SizeofFloat32
+
+		r.realTime += 1.0 / float64(r.sampleRate)
+		if r.realTime > r.maxDuration {
+			return bytesRead, io.EOF
+		}
+	}
+
+	return bytesRead, nil
 }
 
-func (r *Ring) SampleRate() int                            { return r.sampleRate }
+func (r *Ring) SampleRate() uint32                         { return r.sampleRate }
 func (r *Ring) NumChannels() int                           { return 1 }
-func (r *Ring) BitDepth() int                              { return 16 }
-func (r *Ring) TotalPlaybackTime() float64                 { return r.totalPlaybackTime }
 func (r *Ring) SetHeadPositionFn(fn func(float64) float64) { r.headPositionFn = fn }
 func (r *Ring) SetDuration(d time.Duration)                { r.maxDuration = float64(d) / float64(time.Second) }

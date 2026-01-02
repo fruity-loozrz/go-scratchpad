@@ -36,25 +36,25 @@ func NewPlayCmd() *cobra.Command {
 	return cmd
 }
 
-func createPlate(fileName string) (*ring.Ring, error) {
+func createRing(fileName string) (*ring.Ring, error) {
 	file, err := os.Open(fileName)
 	if err != nil {
 		return nil, err
 	}
 	defer file.Close()
 
-	plate, err := ring.NewRingFromWav(file)
+	ring, err := ring.NewRingFromWav(file)
 	if err != nil {
 		return nil, err
 	}
 
-	return plate, nil
+	return ring, nil
 }
 
 func runPlay(soundFile, automationFile string) error {
-	plate, err := createPlate(soundFile)
+	ring, err := createRing(soundFile)
 	if err != nil {
-		return fmt.Errorf("failed to create plate: %w", err)
+		return fmt.Errorf("failed to create ring: %w", err)
 	}
 
 	automationBytes, err := os.ReadFile(automationFile)
@@ -74,18 +74,18 @@ func runPlay(soundFile, automationFile string) error {
 		return fmt.Errorf("failed to create keyframe sequence: %w", err)
 	}
 
-	plate.SetHeadPositionFn(
+	ring.SetHeadPositionFn(
 		func(f float64) float64 {
 			return kfInterpolator.ValueAtTime(f)
 		},
 	)
 
-	plate.SetDuration(kfInterpolator.Duration())
+	ring.SetDuration(kfInterpolator.Duration())
 
 	op := &oto.NewContextOptions{
-		SampleRate:   plate.SampleRate(),
-		ChannelCount: plate.NumChannels(),
-		Format:       oto.FormatSignedInt16LE,
+		SampleRate:   int(ring.SampleRate()),
+		ChannelCount: ring.NumChannels(),
+		Format:       oto.FormatFloat32LE,
 	}
 
 	ctx, readyChan, err := oto.NewContext(op)
@@ -94,7 +94,7 @@ func runPlay(soundFile, automationFile string) error {
 	}
 	<-readyChan
 
-	player := ctx.NewPlayer(plate)
+	player := ctx.NewPlayer(ring)
 	player.Play()
 
 	for {
