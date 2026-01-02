@@ -13,8 +13,8 @@
             "args": [
                 "play",
                 "-a",
-                "./audio/linear.auto.txt",
-                "./audio/voice-see-you/727512__voiceoverneil__see-you-next-time-neil-williams-male-voice-over-artist.wav"
+                "./audio/orchestra-low-hit/figure-1.auto.txt",
+                "./audio/orchestra-low-hit/414343__malocculsion__malocculsion_orchestrahell1.wav"
             ],
             "console": "integratedTerminal",
             "cwd": "${workspaceFolder}"
