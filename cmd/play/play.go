@@ -67,20 +67,19 @@ func runPlay(soundFile, automationFile string) error {
 		return fmt.Errorf("failed to parse automation: %w", err)
 	}
 
-	kfs := program.ToKeyframes()
-
-	kfInterpolator, err := keyframes.NewKeyframeSequence(kfs)
+	kfPoints := program.ToKeyframes()
+	kfSequence, err := keyframes.NewKeyframeSequence(program.Predictor, kfPoints)
 	if err != nil {
 		return fmt.Errorf("failed to create keyframe sequence: %w", err)
 	}
 
 	ring.SetHeadPositionFn(
 		func(f float64) float64 {
-			return kfInterpolator.ValueAtTime(f)
+			return kfSequence.ValueAtTime(f)
 		},
 	)
 
-	ring.SetDuration(kfInterpolator.Duration())
+	ring.SetDuration(kfSequence.Duration())
 
 	op := &oto.NewContextOptions{
 		SampleRate:   int(ring.SampleRate()),

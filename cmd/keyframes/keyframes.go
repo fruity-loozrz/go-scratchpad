@@ -65,7 +65,7 @@ func runKeyframes(automationFile string, timeStep float64, showChart bool) error
 	// Check if we need interpolation
 	if timeStep > 0 {
 		// Create keyframe sequence for interpolation
-		kfSeq, err := keyframes.NewKeyframeSequence(kfs)
+		kfSeq, err := keyframes.NewKeyframeSequence(program.Predictor, kfs)
 		if err != nil {
 			return fmt.Errorf("failed to create keyframe sequence: %w", err)
 		}

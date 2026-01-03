@@ -22,18 +22,29 @@ const (
 	actionTypeNone actionType = iota
 	actionTypeMove
 	actionTypeBpm
+	actionTypeInterpolation
+)
+
+type interpolationType string
+
+const (
+	interpolationTypeCubic  interpolationType = "cubic"
+	interpolationTypeLinear interpolationType = "linear"
 )
 
 const (
-	bpmToken     = "bpm"
-	defaultBpm   = 140.0
-	equalToken   = "="
+	bpmToken                 = "bpm"
+	defaultBpm               = 140.0
+	equalToken               = "="
+	interpolateToken         = "interpolate"
+	defaultInterpolationType = interpolationTypeCubic
 )
 
 type action struct {
-	actionType actionType
-	bpm        float64
-	move       *Move
+	actionType        actionType
+	bpm               float64
+	move              *Move
+	interpolationType interpolationType
 }
 
 func parseReal(field string) (float64, bool) {
@@ -103,6 +114,20 @@ func parseBpm(fields []string) (float64, bool) {
 	return parseReal(fields[1])
 }
 
+func parseInterpolation(fields []string) (interpolationType, bool) {
+	if len(fields) < 2 {
+		return "", false
+	}
+	if fields[0] != interpolateToken {
+		return "", false
+	}
+	return interpolationType(fields[1]), true
+}
+
+func isValidInterpolationType(interpolationType interpolationType) bool {
+	return interpolationType == interpolationTypeCubic || interpolationType == interpolationTypeLinear
+}
+
 func parseLine(line string) (*action, error) {
 	if idx := strings.Index(line, "#"); idx != -1 {
 		line = line[:idx]
@@ -128,6 +153,13 @@ func parseLine(line string) (*action, error) {
 		}, nil
 	}
 
+	if interpolationType, ok := parseInterpolation(fields); ok {
+		return &action{
+			actionType:        actionTypeInterpolation,
+			interpolationType: interpolationType,
+		}, nil
+	}
+
 	return nil, fmt.Errorf("could not parse line %q", line)
 }
 
@@ -136,7 +168,10 @@ func Parse(input string) (*Program, error) {
 		Bpm:   defaultBpm,
 		Moves: []Move{},
 	}
+	program.SetInterpolationType(defaultInterpolationType)
+
 	bpmIsSet := false
+	interpolationIsSet := false
 
 	scanner := bufio.NewScanner(strings.NewReader(input))
 	for scanner.Scan() {
@@ -162,6 +197,17 @@ func Parse(input string) (*Program, error) {
 				}
 				program.Bpm = action.bpm
 				bpmIsSet = true
+			}
+		case actionTypeInterpolation:
+			{
+				if interpolationIsSet {
+					return nil, fmt.Errorf("duplicate interpolation set: %v", action.interpolationType)
+				}
+				if !isValidInterpolationType(action.interpolationType) {
+					return nil, fmt.Errorf("invalid interpolation type: %v", action.interpolationType)
+				}
+				program.SetInterpolationType(action.interpolationType)
+				interpolationIsSet = true
 			}
 		case actionTypeNone:
 			{

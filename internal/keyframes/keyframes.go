@@ -4,23 +4,17 @@ import (
 	"fmt"
 	"sort"
 	"time"
-
-	"gonum.org/v1/gonum/interp"
 )
-
-type Keyframe struct {
-	Time  float64
-	Value float64
-}
 
 type KeyframeSequence struct {
 	Keyframes []Keyframe
-	predictor interp.PiecewiseCubic
+	predictor PredictorFitter
 }
 
-func NewKeyframeSequence(keyframes []Keyframe) (*KeyframeSequence, error) {
+func NewKeyframeSequence(predictor PredictorFitter, keyframes []Keyframe) (*KeyframeSequence, error) {
 	kfs := &KeyframeSequence{
 		Keyframes: keyframes,
+		predictor: predictor,
 	}
 
 	err := kfs.initialize()
@@ -60,8 +54,6 @@ func (k *KeyframeSequence) initialize() error {
 		return err
 	}
 
-	k.predictor = interp.PiecewiseCubic{}
-
 	times := make([]float64, len(k.Keyframes))
 	values := make([]float64, len(k.Keyframes))
 	for i, kf := range k.Keyframes {
@@ -69,22 +61,7 @@ func (k *KeyframeSequence) initialize() error {
 		values[i] = kf.Value
 	}
 
-	derivatives := make([]float64, len(k.Keyframes))
-
-	for i := 0; i < len(times); i++ {
-		if i == 0 {
-			// First point: use forward difference
-			derivatives[i] = (values[i+1] - values[i]) / (times[i+1] - times[i])
-		} else if i == len(times)-1 {
-			// Last point: use backward difference
-			derivatives[i] = (values[i] - values[i-1]) / (times[i] - times[i-1])
-		} else {
-			// Middle points: use central difference
-			derivatives[i] = (values[i+1] - values[i-1]) / (times[i+1] - times[i-1])
-		}
-	}
-
-	k.predictor.FitWithDerivatives(times, values, derivatives)
+	k.predictor.Fit(times, values)
 
 	return nil
 }

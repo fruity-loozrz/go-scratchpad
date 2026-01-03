@@ -23,15 +23,6 @@ tasks:
           -a ./audio/orchectra-hit/figure-1.auto.txt \
           ./audio/orchectra-hit/822403__astro_denticle__gm-orch-hit-sinfonietta-op.wav
 
-  example-voice-see-you-linear:
-    desc: "example"
-    deps:
-      - build
-    cmd: |
-        ./dist/debug/scratchpad play \
-          -a ./audio/linear.auto.txt \
-          ./audio/voice-see-you/727512__voiceoverneil__see-you-next-time-neil-williams-male-voice-over-artist.wav
-
   example-voice-see-you-1:
     desc: "example"
     deps:
@@ -50,8 +41,15 @@ tasks:
           -a ./audio/voice-see-you/figure-2.auto.txt \
           ./audio/voice-see-you/727512__voiceoverneil__see-you-next-time-neil-williams-male-voice-over-artist.wav
 
+  example-voice-see-you-linear-1:
+    desc: "example"
+    deps:
+      - build
+    cmd: |
+        ./dist/debug/scratchpad play \
+          -a ./audio/voice-see-you/linear-1.auto.txt \
+          ./audio/voice-see-you/727512__voiceoverneil__see-you-next-time-neil-williams-male-voice-over-artist.wav
 
-# audio/orchestra-low-hit/414343__malocculsion__malocculsion_orchestrahell1.wav
 
   example-orchestra-low-hit-1:
     desc: "example"
