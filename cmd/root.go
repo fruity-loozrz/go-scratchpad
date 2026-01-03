@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"github.com/fruity-loozrz/go-scratchpad/cmd/play"
+	"github.com/fruity-loozrz/go-scratchpad/cmd/render"
 	"github.com/spf13/cobra"
 )
 
@@ -17,4 +18,5 @@ func Execute() error {
 
 func init() {
 	rootCmd.AddCommand(play.NewPlayCmd())
+	rootCmd.AddCommand(render.NewRenderCmd())
 }
