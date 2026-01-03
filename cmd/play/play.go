@@ -3,13 +3,10 @@ package play
 import (
 	"fmt"
 	"log"
-	"os"
 	"time"
 
 	"github.com/ebitengine/oto/v3"
-	"github.com/fruity-loozrz/go-scratchpad/internal/automation"
-	"github.com/fruity-loozrz/go-scratchpad/internal/keyframes"
-	"github.com/fruity-loozrz/go-scratchpad/internal/ring"
+	"github.com/fruity-loozrz/go-scratchpad/internal/scratch"
 	"github.com/spf13/cobra"
 )
 
@@ -36,54 +33,22 @@ func NewPlayCmd() *cobra.Command {
 	return cmd
 }
 
-func createRing(fileName string) (*ring.Ring, error) {
-	file, err := os.Open(fileName)
-	if err != nil {
-		return nil, err
+func runPlay(wavFileName, automationFileName string) error {
+	scr := scratch.NewScratch()
+	defer scr.Close()
+	if err := scr.SetWavFileName(wavFileName); err != nil {
+		return err
 	}
-	defer file.Close()
-
-	ring, err := ring.NewRingFromWav(file)
-	if err != nil {
-		return nil, err
+	if err := scr.SetAutomationFileName(automationFileName); err != nil {
+		return err
 	}
-
-	return ring, nil
-}
-
-func runPlay(soundFile, automationFile string) error {
-	ring, err := createRing(soundFile)
-	if err != nil {
-		return fmt.Errorf("failed to create ring: %w", err)
+	if err := scr.Init(); err != nil {
+		return err
 	}
-
-	automationBytes, err := os.ReadFile(automationFile)
-	if err != nil {
-		return fmt.Errorf("failed to read automation file: %w", err)
-	}
-
-	program, err := automation.Parse(string(automationBytes))
-	if err != nil {
-		return fmt.Errorf("failed to parse automation: %w", err)
-	}
-
-	kfPoints := program.ToKeyframes()
-	kfSequence, err := keyframes.NewKeyframeSequence(program.Predictor, kfPoints)
-	if err != nil {
-		return fmt.Errorf("failed to create keyframe sequence: %w", err)
-	}
-
-	ring.SetHeadPositionFn(
-		func(f float64) float64 {
-			return kfSequence.ValueAtTime(f)
-		},
-	)
-
-	ring.SetDuration(kfSequence.Duration())
 
 	op := &oto.NewContextOptions{
-		SampleRate:   int(ring.SampleRate()),
-		ChannelCount: ring.NumChannels(),
+		SampleRate:   int(scr.SampleRate()),
+		ChannelCount: scr.NumChannels(),
 		Format:       oto.FormatFloat32LE,
 	}
 
@@ -93,7 +58,7 @@ func runPlay(soundFile, automationFile string) error {
 	}
 	<-readyChan
 
-	player := ctx.NewPlayer(ring)
+	player := ctx.NewPlayer(scr)
 	player.Play()
 
 	for {

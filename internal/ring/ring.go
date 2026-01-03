@@ -5,7 +5,6 @@ import (
 	"errors"
 	"io"
 	"math"
-	"os"
 	"time"
 
 	"github.com/youpy/go-wav"
@@ -26,7 +25,7 @@ type Ring struct {
 	maxDuration    float64
 }
 
-func NewRingFromWav(file *os.File) (*Ring, error) {
+func NewRingFromWav(file Reader) (*Ring, error) {
 	ring := &Ring{}
 
 	if err := ring.initialize(file); err != nil {
@@ -36,7 +35,7 @@ func NewRingFromWav(file *os.File) (*Ring, error) {
 	return ring, nil
 }
 
-func (r *Ring) initialize(file *os.File) error {
+func (r *Ring) initialize(file Reader) error {
 	reader := wav.NewReader(file)
 	format, err := reader.Format()
 	if err != nil {
