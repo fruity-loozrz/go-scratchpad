@@ -4,7 +4,6 @@ go 1.25.5
 
 require (
 	github.com/ebitengine/oto/v3 v3.4.0
-	github.com/guptarohit/asciigraph v0.7.3
 	github.com/spf13/cobra v1.10.2
 	github.com/youpy/go-wav v0.3.2
 	gonum.org/v1/gonum v0.16.0
