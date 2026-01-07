@@ -24,7 +24,7 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${workspaceFolder}/internal/vnl/example/main.go",
+            "program": "${workspaceFolder}/examples/sequencer/main.go",
             "console": "integratedTerminal",
             "cwd": "${workspaceFolder}"
         }
