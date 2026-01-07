@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"time"
 
-	"github.com/fruity-loozrz/go-scratchpad/internal/automation"
-	"github.com/fruity-loozrz/go-scratchpad/internal/keyframes"
 	"github.com/fruity-loozrz/go-scratchpad/internal/ring"
+	"github.com/fruity-loozrz/go-scratchpad/internal/vnl"
+	"github.com/fruity-loozrz/go-scratchpad/internal/vnljs"
 )
 
 type Scratch struct {
@@ -65,24 +66,28 @@ func (s *Scratch) Init() error {
 		return fmt.Errorf("unable to read automation: %w", err)
 	}
 
-	program, err := automation.Parse(string(automationString))
+	vnlScriptApi, err := vnljs.ExecuteVnlJs(string(automationString))
 	if err != nil {
-		return fmt.Errorf("unable to parse automation: %w", err)
+		return fmt.Errorf("unable to execute vnl script: %w", err)
 	}
 
-	kfPoints := program.ToKeyframes()
-	kfSequence, err := keyframes.NewKeyframeSequence(program.Predictor, kfPoints)
+	bpm := vnlScriptApi.BeatsPerMinute
+	rpm := vnlScriptApi.RotationsPerMinute
+
+	seqr, err := vnl.NewSequencerFromBpmRpm(vnlScriptApi.Actions(), bpm, rpm)
 	if err != nil {
-		return fmt.Errorf("failed to create keyframe sequence: %w", err)
+		return fmt.Errorf("unable to create sequencer: %w", err)
 	}
 
-	ring.SetHeadPositionFn(
-		func(f float64) float64 {
-			return kfSequence.ValueAtTime(f)
+	ring.SetPositionAndGainFn(
+		func(t float64) (float64, float64) {
+			sample, _ := seqr.GetPositionAndGainAtTime(t)
+			return sample.Pos, sample.Vol
 		},
 	)
 
-	ring.SetDuration(kfSequence.Duration())
+	// TODO: simplify the code, use seconds, not time.Duration everywhere
+	ring.SetDuration(time.Duration(seqr.GetTotalSequenceDurationInSeconds() * float64(time.Second)))
 
 	return nil
 }

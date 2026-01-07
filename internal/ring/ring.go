@@ -20,9 +20,9 @@ type Ring struct {
 	sampleRate   uint32
 	numChannels  uint16
 
-	realTime       float64
-	headPositionFn func(float64) float64
-	maxDuration    float64
+	realTime          float64
+	positionAndGainFn func(float64) (float64, float64)
+	maxDuration       float64
 }
 
 func NewRingFromWav(file Reader) (*Ring, error) {
@@ -66,7 +66,7 @@ func (r *Ring) initialize(file Reader) error {
 	}
 	r.samplesCount = samplesCount
 
-	r.headPositionFn = func(t float64) float64 { return t }
+	r.positionAndGainFn = func(t float64) (float64, float64) { return t, 1.0 }
 
 	return nil
 }
@@ -108,10 +108,10 @@ func (r *Ring) Read(buf []byte) (int, error) {
 	bytesRead := 0
 
 	for i := range samplesRequested {
-		headTime := r.headPositionFn(r.realTime)
+		headTime, gain := r.positionAndGainFn(r.realTime)
 
 		for currentChannel := 0; currentChannel < numChannels; currentChannel++ {
-			sample := r.getSampleAtTimeLinear(headTime, currentChannel)
+			sample := r.getSampleAtTimeLinear(headTime, currentChannel) * gain
 
 			binary.LittleEndian.PutUint32(
 				buf[(i*numChannels+currentChannel)*SizeofFloat32:],
@@ -130,7 +130,7 @@ func (r *Ring) Read(buf []byte) (int, error) {
 }
 
 // SetHeadPositionFn sets a function that returns the head position in seconds at a given time
-func (r *Ring) SetHeadPositionFn(fn func(float64) float64) { r.headPositionFn = fn }
-func (r *Ring) SetDuration(d time.Duration)                { r.maxDuration = float64(d) / float64(time.Second) }
-func (r *Ring) SampleRate() uint32                         { return r.sampleRate }
-func (r *Ring) NumChannels() int                           { return int(r.numChannels) }
+func (r *Ring) SetPositionAndGainFn(fn func(float64) (float64, float64)) { r.positionAndGainFn = fn }
+func (r *Ring) SetDuration(d time.Duration)                              { r.maxDuration = float64(d) / float64(time.Second) }
+func (r *Ring) SampleRate() uint32                                       { return r.sampleRate }
+func (r *Ring) NumChannels() int                                         { return int(r.numChannels) }

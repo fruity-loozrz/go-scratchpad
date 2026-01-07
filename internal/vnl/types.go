@@ -25,18 +25,18 @@ const (
 	// Used for: Baby Scratch, simple back-and-forth motion.
 	// Math: Sine InOut
 	// DSL symbol: "~"
-	EaseSmooth EasingType = "easeInOutSine"
+	EaseSmooth EasingType = "smooth"
 
 	// Sharp: Aggressive, sharp movement.
 	// Used for: Chirps, Stabs, Scribble. Fast acceleration/deceleration.
 	// Math: Cubic InOut
 	// DSL symbol: "^"
-	EaseSharp EasingType = "easeInOutCubic"
+	EaseSharp EasingType = "sharp"
 
 	// Heavy: Feeling of heavy hand or high resistance.
 	// Used for: Slow, "viscous" scratches.
 	// Math: Quint InOut
-	EaseHeavy EasingType = "easeInOutQuint"
+	EaseHeavy EasingType = "heavy"
 
 	// --- 2. Platter Physics ---
 
@@ -44,29 +44,29 @@ const (
 	// Used for: Phrase endings, spin-ups.
 	// Math: Expo Out (Sharp start, smooth stabilization)
 	// DSL symbol: ">"
-	EaseMotorStart EasingType = "easeOutExpo"
+	EaseMotorStart EasingType = "motorStart"
 
 	// Spinback: Sharp throw backwards.
 	// Used for: Backspin, rewinding.
 	// Math: Cubic Out
-	EaseSpinback EasingType = "easeOutCubic"
+	EaseSpinback EasingType = "spinback"
 
 	// Stop: Simulates pressing the Stop button (Power Down).
 	// Platter slows down to 0.
 	// Math: Quad Out
-	EasePowerDown EasingType = "easeOutQuad"
+	EasePowerDown EasingType = "powerDown"
 
 	// --- 3. Special FX ---
 
 	// Bounce: Rebound effect.
 	// Used for: Hitting a limiter or juggling simulation.
 	// Math: EaseOutBounce
-	EaseBounce EasingType = "easeOutBounce"
+	EaseBounce EasingType = "bounce"
 
 	// Elastic: Spring-like motion.
 	// Used for: Glitch effects, digital scratches.
 	// Math: EaseOutElastic
-	EaseElastic EasingType = "easeOutElastic"
+	EaseElastic EasingType = "elastic"
 )
 
 type Direction int
