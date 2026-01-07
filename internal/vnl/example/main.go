@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/fruity-loozrz/go-scratchpad/internal/vnl"
 )
@@ -16,7 +17,7 @@ func main() {
 	action0 := vnl.ScratchAction{
 		PlatterStart:    0,
 		PlatterEnd:      1.0 / 8,
-		DurationInBeats: 1.0 / 8,         // The duration of the move - an eighth note
+		DurationInBeats: 1.0,
 		Easing:          vnl.EaseSmooth,  // Smooth acceleration and deceleration ("~" easing)
 		FaderPattern:    vnl.PatternOpen, // Fader is open for the entire distance
 	}
@@ -25,7 +26,7 @@ func main() {
 	action1 := vnl.ScratchAction{
 		PlatterStart:    1.0 / 8,
 		PlatterEnd:      0,
-		DurationInBeats: 1.0 / 8,
+		DurationInBeats: 1.0,
 		Easing:          vnl.EaseSmooth, // The same smooth acceleration and deceleration
 		FaderPattern:    vnl.PatternOpen,
 	}
@@ -41,11 +42,22 @@ func main() {
 
 	totalDuration := seq.GetTotalSequenceDurationInSeconds()
 
-	for currentTime := 0.0; currentTime < totalDuration; currentTime++ {
+	viewResolutionInSeconds := 0.01
+
+	for currentTime := 0.0; currentTime < totalDuration; currentTime += viewResolutionInSeconds {
 		sample, err := seq.GetPositionAndGainAtTime(currentTime)
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println(sample.Pos, sample.Vol)
+
+		barScale := 40.0
+
+		posBar := strings.Repeat("^", int(sample.Pos*barScale))
+		gainBar := strings.Repeat("|", int(sample.Vol*barScale))
+
+		// fmt.Println(currentTime)
+		fmt.Println(posBar)
+		fmt.Println(gainBar)
+		fmt.Println()
 	}
 }

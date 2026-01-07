@@ -64,11 +64,14 @@ func (s *Sequencer) initialize() *Sequencer {
 	s.actionsWithAbsoluteTime = make([]ActionWithAbsoluteTime, len(s.actions))
 
 	for i, action := range s.actions {
-		s.actionsWithAbsoluteTime[i] = ActionWithAbsoluteTime{
+		newAction := ActionWithAbsoluteTime{
 			ScratchAction: action,
 			StartTime:     currentTime,
 			EndTime:       currentTime + s.beatDurationInSeconds*action.DurationInBeats,
 		}
+
+		s.actionsWithAbsoluteTime[i] = newAction
+		currentTime = newAction.EndTime
 	}
 
 	return s
