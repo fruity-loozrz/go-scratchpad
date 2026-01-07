@@ -1,6 +1,8 @@
 package vnljs
 
 import (
+	"math/rand"
+
 	"github.com/dop251/goja"
 	"github.com/fruity-loozrz/go-scratchpad/internal/vnl"
 )
@@ -35,8 +37,10 @@ func (a *ActionApi) Platter(start, end float64) *ActionApi {
 
 type Api struct {
 	actions            []*vnl.ScratchAction
+	SampleFile         string
 	BeatsPerMinute     float64
 	RotationsPerMinute float64
+	randSource         *rand.Rand
 }
 
 func (a *Api) Action() *ActionApi {
@@ -63,6 +67,22 @@ func (a *Api) RPM(rpm float64) *Api {
 	return a
 }
 
+func (a *Api) Sample(sampleFile string) *Api {
+	a.SampleFile = sampleFile
+	return a
+}
+
+func (a *Api) Seed(seed int64) {
+	a.randSource = rand.New(rand.NewSource(seed))
+}
+
+func (a *Api) Rand() float64 {
+	if a.randSource == nil {
+		a.Seed(0)
+	}
+	return a.randSource.Float64()
+}
+
 func ExecuteVnlJs(script string) (*Api, error) {
 	api := &Api{
 		BeatsPerMinute:     100.0,
@@ -70,12 +90,15 @@ func ExecuteVnlJs(script string) (*Api, error) {
 	}
 
 	vm := goja.New()
-	err := vm.Set("api", api)
-	if err != nil {
-		return nil, err
-	}
+	_ = vm.Set("api", api)
+	_ = vm.Set("sample", api.Sample)
+	_ = vm.Set("rpm", api.RPM)
+	_ = vm.Set("bpm", api.BPM)
+	_ = vm.Set("$", api.Action)
+	_ = vm.Set("seed", api.Seed)
+	_ = vm.Set("rand", api.Rand)
 
-	_, err = vm.RunString(script)
+	_, err := vm.RunString(script)
 	if err != nil {
 		return nil, err
 	}

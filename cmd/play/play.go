@@ -14,14 +14,12 @@ var automationFile string
 
 func NewPlayCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "play [sound file]",
+		Use:   "play",
 		Short: "Play a sound file with automation",
 		Long:  `Play a sound file with automation from a specified automation file.`,
-		Args:  cobra.ExactArgs(1),
+		Args:  cobra.ExactArgs(0),
 		Run: func(cmd *cobra.Command, args []string) {
-			soundFile := args[0]
-
-			if err := runPlay(soundFile, automationFile); err != nil {
+			if err := runPlay(automationFile); err != nil {
 				log.Fatal(err)
 			}
 		},
@@ -33,12 +31,9 @@ func NewPlayCmd() *cobra.Command {
 	return cmd
 }
 
-func runPlay(wavFileName, automationFileName string) error {
+func runPlay(automationFileName string) error {
 	scr := scratch.NewScratch()
 	defer scr.Close()
-	if err := scr.SetWavFileName(wavFileName); err != nil {
-		return err
-	}
 	if err := scr.SetAutomationFileName(automationFileName); err != nil {
 		return err
 	}

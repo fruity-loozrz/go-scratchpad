@@ -55,12 +55,6 @@ func (s *Scratch) SetWavFileName(fileName string) error {
 }
 
 func (s *Scratch) Init() error {
-	ring, err := ring.NewRingFromWav(s.wavReader)
-	if err != nil {
-		return fmt.Errorf("unable to create ring: %w", err)
-	}
-	s.Ring = ring
-
 	automationString, err := io.ReadAll(s.automationReader)
 	if err != nil {
 		return fmt.Errorf("unable to read automation: %w", err)
@@ -73,11 +67,21 @@ func (s *Scratch) Init() error {
 
 	bpm := vnlScriptApi.BeatsPerMinute
 	rpm := vnlScriptApi.RotationsPerMinute
+	wavFile := vnlScriptApi.SampleFile
+	if err := s.SetWavFileName(wavFile); err != nil {
+		return err
+	}
 
 	seqr, err := vnl.NewSequencerFromBpmRpm(vnlScriptApi.Actions(), bpm, rpm)
 	if err != nil {
 		return fmt.Errorf("unable to create sequencer: %w", err)
 	}
+
+	ring, err := ring.NewRingFromWav(s.wavReader)
+	if err != nil {
+		return fmt.Errorf("unable to create ring: %w", err)
+	}
+	s.Ring = ring
 
 	ring.SetPositionAndGainFn(
 		func(t float64) (float64, float64) {
