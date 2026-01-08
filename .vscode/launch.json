@@ -5,21 +5,6 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Sample 24 48 mono",
-            "type": "go",
-            "request": "launch",
-            "mode": "auto",
-            "program": "${workspaceFolder}/main.go",
-            "args": [
-                "play",
-                "-a",
-                "./audio/orchestra-low-hit/figure-1.auto.txt",
-                "./audio/orchestra-low-hit/414343__malocculsion__malocculsion_orchestrahell1.wav"
-            ],
-            "console": "integratedTerminal",
-            "cwd": "${workspaceFolder}"
-        },
-        {
             "name": "VNL Example",
             "type": "go",
             "request": "launch",
@@ -27,6 +12,20 @@
             "program": "${workspaceFolder}/examples/sequencer/main.go",
             "console": "integratedTerminal",
             "cwd": "${workspaceFolder}"
+        },
+        {
+            "name": "VNLJS Example",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/main.go",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}",
+            "args": [
+                "play",
+                "-a",
+                "./audio/aaah-fresh/auto.vnl.js"
+            ]
         }
     ]
 }

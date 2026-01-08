@@ -1,15 +1,9 @@
 package vnl
 
 import (
-	"errors"
-
 	"github.com/fogleman/ease"
 	"github.com/fruity-loozrz/go-scratchpad/internal/math/interpolation"
 )
-
-var ErrEmptyActions = errors.New("actions list empty")
-var ErrSmallBeatDuration = errors.New("beatDurationInSeconds <= 0")
-var ErrSmallPlatterDuration = errors.New("platterRevolutionDurationInSeconds <= 0")
 
 type ActionWithAbsoluteTime struct {
 	ScratchAction ScratchAction
@@ -106,23 +100,14 @@ func (s *Sequencer) getGainAtTime(timeInSeconds float64) (float64, error) {
 }
 
 func (s *Sequencer) getPlatterPositionAtTimeInSeconds(timeInSeconds float64) float64 {
-	action, _, _ := s.getActionAndProgressAtTime(timeInSeconds)
-	easeFn := GetEasingFunc(action.ScratchAction.Easing)
+	action, progress, _ := s.getActionAndProgressAtTime(timeInSeconds)
 
-	startTimeInSeconds := action.StartTime
-	endTimeInSeconds := action.EndTime
-	startPlatterPositionInRevolutions := action.ScratchAction.PlatterStart
-	endPlatterPositionInRevolutions := action.ScratchAction.PlatterEnd
+	// TODO: the math here is disgusting.
+	// Find better measurement units alignment for this, or incapulate it in the action
 
-	platterPositionInRevoilutions := interpolation.EaseBetween(
-		startTimeInSeconds,
-		endTimeInSeconds,
-		startPlatterPositionInRevolutions,
-		endPlatterPositionInRevolutions,
-		timeInSeconds,
-		easeFn,
-	)
-
+	progressInBeats := progress * action.ScratchAction.DurationInBeats
+	platterPositionEnvelope := action.ScratchAction.GetEnvelope()
+	platterPositionInRevoilutions := platterPositionEnvelope.ValueAt(progressInBeats)
 	platterPositionInSeconds := platterPositionInRevoilutions * s.platterRevolutionDurationInSeconds
 	return platterPositionInSeconds
 }

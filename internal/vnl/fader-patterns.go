@@ -1,25 +1,6 @@
 package vnl
 
-// FaderKeyframe represents a point in time within the scratch action.
-type FaderKeyframe struct {
-	Pos   float64 // 0.0 to 1.0 (Percentage of the duration)
-	Value float64 // 0.0 (Closed) or 1.0 (Open)
-}
-
-// FaderEnvelope is the sequence of states for one action.
-type FaderEnvelope []FaderKeyframe
-
-func (fe FaderEnvelope) Unzip() (positions []float64, values []float64) {
-	positions = make([]float64, len(fe))
-	values = make([]float64, len(fe))
-	for i, kf := range fe {
-		positions[i] = kf.Pos
-		values[i] = kf.Value
-	}
-	return
-}
-
-var FaderPatterns = map[FaderPattern]FaderEnvelope{
+var FaderPatterns = map[FaderPattern]Envelope{
 
 	// --- Basics ---
 
