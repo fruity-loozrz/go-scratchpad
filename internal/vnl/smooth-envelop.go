@@ -48,8 +48,8 @@ func NewSmoothEnvelop(keyframes []Keyframe, easings []func(float64) float64) (*S
 	}, nil
 }
 
-// NewSmoothEnvelopFromTypes creates a SmoothEnvelop using EasingType constants.
-func NewSmoothEnvelopFromTypes(keyframes []Keyframe, easingTypes []EasingType) (*SmoothEnvelope, error) {
+// NewSmoothEnvelopFromKeyframesAndEasings creates a SmoothEnvelop using EasingType constants.
+func NewSmoothEnvelopFromKeyframesAndEasings(keyframes []Keyframe, easingTypes []EasingType) (*SmoothEnvelope, error) {
 	easings := make([]func(float64) float64, len(easingTypes))
 	for i, et := range easingTypes {
 		easings[i] = GetEasingFunc(et)
@@ -94,4 +94,8 @@ func (se *SmoothEnvelope) Keyframes() []Keyframe {
 // NumIntervals returns the number of intervals between keyframes.
 func (se *SmoothEnvelope) NumIntervals() int {
 	return len(se.keyframes) - 1
+}
+
+func (se *SmoothEnvelope) Envelope() *SmoothEnvelope {
+	return se
 }

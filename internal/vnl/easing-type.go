@@ -114,3 +114,45 @@ func GetEasingFunc(easingType EasingType) func(float64) float64 {
 	}
 	return ease.Linear
 }
+
+func (e EasingType) IsValid() bool {
+	switch e {
+	case
+		Linear,
+		InQuad,
+		OutQuad,
+		InOutQuad,
+		InCubic,
+		OutCubic,
+		InOutCubic,
+		InQuart,
+		OutQuart,
+		InOutQuart,
+		InQuint,
+		OutQuint,
+		InOutQuint,
+		InSine,
+		OutSine,
+		InOutSine,
+		InExpo,
+		OutExpo,
+		InOutExpo,
+		InCirc,
+		OutCirc,
+		InOutCirc,
+		InElastic,
+		OutElastic,
+		InOutElastic,
+		InBack,
+		OutBack,
+		InOutBack,
+		InBounce,
+		OutBounce,
+		InOutBounce,
+		InSquare,
+		OutSquare,
+		InOutSquare:
+		return true
+	}
+	return false
+}

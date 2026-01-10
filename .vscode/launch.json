@@ -24,7 +24,7 @@
             "args": [
                 "play",
                 "-a",
-                "./audio/aaah-fresh/auto.vnl.js"
+                "./audio/aaah-fresh/envs.js"
             ]
         }
     ]

@@ -1,10 +1,5 @@
 package vnl
 
-import (
-	"github.com/fogleman/ease"
-	"github.com/fruity-loozrz/go-scratchpad/internal/math/interpolation"
-)
-
 type ActionWithAbsoluteTime struct {
 	ScratchAction ScratchAction
 	StartTime     float64
@@ -87,16 +82,8 @@ func (s *Sequencer) getActionAndProgressAtTime(timeInSeconds float64) (action *A
 
 func (s *Sequencer) getGainAtTime(timeInSeconds float64) (float64, error) {
 	action, progress, _ := s.getActionAndProgressAtTime(timeInSeconds)
-
 	faderEnvelope := FaderPatterns[action.ScratchAction.FaderPattern]
-
-	faderPositions, faderValues := faderEnvelope.Unzip()
-	return interpolation.PieceWiseEaseInterpolateWithSingleEasingFn(
-		faderPositions,
-		faderValues,
-		ease.InOutQuint,
-		progress,
-	)
+	return faderEnvelope.ValueAt(progress), nil
 }
 
 func (s *Sequencer) getPlatterPositionAtTimeInSeconds(timeInSeconds float64) float64 {

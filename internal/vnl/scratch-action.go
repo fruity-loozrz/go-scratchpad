@@ -6,12 +6,17 @@ type ScratchAction struct {
 	DurationInBeats float64      // Duration of the action in beats
 	Easing          EasingType   //
 	FaderPattern    FaderPattern //
+	Envelope        *SmoothEnvelope
 }
 
 // GetEnvelope returns the envelope of the action,
 // where the Pos is the time in beats and the Value is the platter position
 func (a *ScratchAction) GetEnvelope() *SmoothEnvelope {
-	env, _ := NewSmoothEnvelopFromTypes(
+	if a.Envelope != nil {
+		return a.Envelope
+	}
+
+	a.Envelope, _ = NewSmoothEnvelopFromKeyframesAndEasings(
 		[]Keyframe{
 			{
 				Pos:   0.0,
@@ -27,5 +32,5 @@ func (a *ScratchAction) GetEnvelope() *SmoothEnvelope {
 		},
 	)
 
-	return env
+	return a.Envelope
 }
