@@ -23,14 +23,7 @@ type Example struct {
 func main() {
 	examples := []Example{
 		example001BabyScratch(),
-		example002Transform(),
 		example003Scribble(),
-		example004Chirp(),
-		example005Flare1(),
-		example006Flare2(),
-		example007Crab(),
-		example008Tear(),
-		example009Hydroplane(),
 	}
 
 	// Create charts directory if it doesn't exist
@@ -65,34 +58,15 @@ func example001BabyScratch() Example {
 				PlatterStart:    0,
 				PlatterEnd:      1.0 / 8,
 				DurationInBeats: 1.0,
-				Easing:          vnl.EaseSmooth,
+				Easing:          vnl.InOutSine,
 				FaderPattern:    vnl.PatternOpen,
 			},
 			{
 				PlatterStart:    1.0 / 8,
 				PlatterEnd:      0,
 				DurationInBeats: 1.0,
-				Easing:          vnl.EaseSmooth,
+				Easing:          vnl.InOutSine,
 				FaderPattern:    vnl.PatternOpen,
-			},
-		},
-	}
-}
-
-func example002Transform() Example {
-	return Example{
-		Number:         "002",
-		Name:           "Transform",
-		Description:    "Forward motion with fader clicks on/off",
-		BeatsPerMinute: 120.0,
-		RPM:            33.0,
-		Actions: []vnl.ScratchAction{
-			{
-				PlatterStart:    0,
-				PlatterEnd:      1.0 / 4,
-				DurationInBeats: 2.0,
-				Easing:          vnl.EaseLinear,
-				FaderPattern:    vnl.PatternTransform,
 			},
 		},
 	}
@@ -100,7 +74,7 @@ func example002Transform() Example {
 
 func example003Scribble() Example {
 	return Example{
-		Number:         "003",
+		Number:         "002",
 		Name:           "Scribble",
 		Description:    "Rapid back-and-forth movements with linear easing",
 		BeatsPerMinute: 140.0,
@@ -110,184 +84,28 @@ func example003Scribble() Example {
 				PlatterStart:    0,
 				PlatterEnd:      1.0 / 16,
 				DurationInBeats: 0.25,
-				Easing:          vnl.EaseLinear,
+				Easing:          vnl.Linear,
 				FaderPattern:    vnl.PatternOpen,
 			},
 			{
 				PlatterStart:    1.0 / 16,
 				PlatterEnd:      0,
 				DurationInBeats: 0.25,
-				Easing:          vnl.EaseLinear,
+				Easing:          vnl.Linear,
 				FaderPattern:    vnl.PatternOpen,
 			},
 			{
 				PlatterStart:    0,
 				PlatterEnd:      1.0 / 16,
 				DurationInBeats: 0.25,
-				Easing:          vnl.EaseLinear,
+				Easing:          vnl.Linear,
 				FaderPattern:    vnl.PatternOpen,
 			},
 			{
 				PlatterStart:    1.0 / 16,
 				PlatterEnd:      0,
 				DurationInBeats: 0.25,
-				Easing:          vnl.EaseLinear,
-				FaderPattern:    vnl.PatternOpen,
-			},
-		},
-	}
-}
-
-func example004Chirp() Example {
-	return Example{
-		Number:         "004",
-		Name:           "Chirp",
-		Description:    "Forward scratch with fader cut pattern",
-		BeatsPerMinute: 110.0,
-		RPM:            33.0,
-		Actions: []vnl.ScratchAction{
-			{
-				PlatterStart:    0,
-				PlatterEnd:      1.0 / 8,
-				DurationInBeats: 1.0,
-				Easing:          vnl.EaseLinear,
-				FaderPattern:    vnl.PatternCut,
-			},
-			{
-				PlatterStart:    1.0 / 8,
-				PlatterEnd:      0,
-				DurationInBeats: 1.0,
-				Easing:          vnl.EaseSmooth,
-				FaderPattern:    vnl.PatternClosed,
-			},
-		},
-	}
-}
-
-func example005Flare1() Example {
-	return Example{
-		Number:         "005",
-		Name:           "1-Click Flare",
-		Description:    "Single fader click during forward motion (Orbit)",
-		BeatsPerMinute: 100.0,
-		RPM:            33.0,
-		Actions: []vnl.ScratchAction{
-			{
-				PlatterStart:    0,
-				PlatterEnd:      1.0 / 8,
-				DurationInBeats: 1.5,
-				Easing:          vnl.EaseSmooth,
-				FaderPattern:    vnl.PatternFlare1,
-			},
-			{
-				PlatterStart:    1.0 / 8,
-				PlatterEnd:      0,
-				DurationInBeats: 1.5,
-				Easing:          vnl.EaseSmooth,
-				FaderPattern:    vnl.PatternOpen,
-			},
-		},
-	}
-}
-
-func example006Flare2() Example {
-	return Example{
-		Number:         "006",
-		Name:           "2-Click Flare",
-		Description:    "Two fader clicks during forward motion",
-		BeatsPerMinute: 95.0,
-		RPM:            33.0,
-		Actions: []vnl.ScratchAction{
-			{
-				PlatterStart:    0,
-				PlatterEnd:      1.0 / 6,
-				DurationInBeats: 2.0,
-				Easing:          vnl.EaseSmooth,
-				FaderPattern:    vnl.PatternFlare2,
-			},
-			{
-				PlatterStart:    1.0 / 6,
-				PlatterEnd:      0,
-				DurationInBeats: 2.0,
-				Easing:          vnl.EaseSmooth,
-				FaderPattern:    vnl.PatternOpen,
-			},
-		},
-	}
-}
-
-func example007Crab() Example {
-	return Example{
-		Number:         "007",
-		Name:           "Crab",
-		Description:    "Three rapid fader clicks (3-click technique)",
-		BeatsPerMinute: 90.0,
-		RPM:            33.0,
-		Actions: []vnl.ScratchAction{
-			{
-				PlatterStart:    0,
-				PlatterEnd:      1.0 / 8,
-				DurationInBeats: 2.0,
-				Easing:          vnl.EaseLinear,
-				FaderPattern:    vnl.PatternCrab,
-			},
-			{
-				PlatterStart:    1.0 / 8,
-				PlatterEnd:      0,
-				DurationInBeats: 2.0,
-				Easing:          vnl.EaseLinear,
-				FaderPattern:    vnl.PatternOpen,
-			},
-		},
-	}
-}
-
-func example008Tear() Example {
-	return Example{
-		Number:         "008",
-		Name:           "Tear",
-		Description:    "Reverse scratch - sound only on the backward motion",
-		BeatsPerMinute: 105.0,
-		RPM:            33.0,
-		Actions: []vnl.ScratchAction{
-			{
-				PlatterStart:    0,
-				PlatterEnd:      1.0 / 8,
-				DurationInBeats: 1.0,
-				Easing:          vnl.EaseSmooth,
-				FaderPattern:    vnl.PatternClosed,
-			},
-			{
-				PlatterStart:    1.0 / 8,
-				PlatterEnd:      0,
-				DurationInBeats: 1.0,
-				Easing:          vnl.EaseSmooth,
-				FaderPattern:    vnl.PatternOpen,
-			},
-		},
-	}
-}
-
-func example009Hydroplane() Example {
-	return Example{
-		Number:         "009",
-		Name:           "Hydroplane",
-		Description:    "Slow forward, fast backward with asymmetric timing",
-		BeatsPerMinute: 115.0,
-		RPM:            33.0,
-		Actions: []vnl.ScratchAction{
-			{
-				PlatterStart:    0,
-				PlatterEnd:      1.0 / 6,
-				DurationInBeats: 2.0,
-				Easing:          vnl.EaseLinear,
-				FaderPattern:    vnl.PatternOpen,
-			},
-			{
-				PlatterStart:    1.0 / 6,
-				PlatterEnd:      0,
-				DurationInBeats: 0.5,
-				Easing:          vnl.EaseLinear,
+				Easing:          vnl.Linear,
 				FaderPattern:    vnl.PatternOpen,
 			},
 		},

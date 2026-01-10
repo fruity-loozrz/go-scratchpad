@@ -1,6 +1,7 @@
 package vnljs
 
 import (
+	"github.com/fruity-loozrz/go-scratchpad/internal/microfmt"
 	"github.com/fruity-loozrz/go-scratchpad/internal/vnl"
 )
 
@@ -21,6 +22,11 @@ func (a *ActionBuilder) Easing(easing vnl.EasingType) *ActionBuilder {
 
 func (a *ActionBuilder) FaderPattern(pattern vnl.FaderPattern) *ActionBuilder {
 	a.Action.FaderPattern = pattern
+	return a
+}
+
+func (a *ActionBuilder) FaderMicro(microformat string, easing vnl.EasingType) *ActionBuilder {
+	// TODO: implement
 	return a
 }
 
