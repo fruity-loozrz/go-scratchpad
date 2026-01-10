@@ -113,7 +113,7 @@ func example003Scribble() Example {
 }
 
 func generateExample(ex Example, chartsDir string) error {
-	seq, err := vnl.NewSequencerFromBpmRpm(ex.Actions, ex.BeatsPerMinute, ex.RPM)
+	seq, err := vnl.NewSequencerFromBpmRpm(ex.Actions, ex.BeatsPerMinute, ex.RPM, 0.0)
 	if err != nil {
 		return fmt.Errorf("failed to create sequencer: %w", err)
 	}

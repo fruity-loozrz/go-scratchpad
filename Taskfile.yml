@@ -20,4 +20,12 @@ tasks:
       - build
     cmd: |
         ./dist/debug/scratchpad play \
-          -a ./audio/aaah-fresh/envs.js
+          -a ./audio/aaah-fresh/envs.vnl.js
+
+  example-1:
+    desc: "example"
+    deps:
+      - build
+    cmd: |
+        ./dist/debug/scratchpad play \
+          -a ./audio/aaah-fresh/vam-konets.vnl.js

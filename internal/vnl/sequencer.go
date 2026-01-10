@@ -11,6 +11,7 @@ type Sequencer struct {
 	actionsWithAbsoluteTime            []ActionWithAbsoluteTime
 	beatDurationInSeconds              float64
 	platterRevolutionDurationInSeconds float64
+	platterPositionOffset              float64
 }
 
 // Sequencer provides a pure function of time in seconds
@@ -22,7 +23,7 @@ type Sequencer struct {
 //
 // Public:
 //   - Given time, return position and gain
-func NewSequencer(actions []ScratchAction, platterRevolutionDurationInSeconds, beatDurationInSeconds float64) (*Sequencer, error) {
+func NewSequencer(actions []ScratchAction, platterRevolutionDurationInSeconds, beatDurationInSeconds, platterPositionOffset float64) (*Sequencer, error) {
 	if platterRevolutionDurationInSeconds <= 0 {
 		return nil, ErrSmallPlatterDuration
 	}
@@ -36,13 +37,14 @@ func NewSequencer(actions []ScratchAction, platterRevolutionDurationInSeconds, b
 		actions:                            actions,
 		beatDurationInSeconds:              beatDurationInSeconds,
 		platterRevolutionDurationInSeconds: platterRevolutionDurationInSeconds,
+		platterPositionOffset:              platterPositionOffset,
 	}).initialize(), nil
 }
 
-func NewSequencerFromBpmRpm(actions []ScratchAction, bpm, rpm float64) (*Sequencer, error) {
+func NewSequencerFromBpmRpm(actions []ScratchAction, bpm, rpm, platterPositionOffset float64) (*Sequencer, error) {
 	beatDurationInSeconds := 60 / bpm
 	platterRevolutionDurationInSeconds := 60 / rpm
-	return NewSequencer(actions, platterRevolutionDurationInSeconds, beatDurationInSeconds)
+	return NewSequencer(actions, platterRevolutionDurationInSeconds, beatDurationInSeconds, platterPositionOffset)
 }
 
 // initialize fills in a structure, where each action is given
@@ -95,6 +97,7 @@ func (s *Sequencer) getPlatterPositionAtTimeInSeconds(timeInSeconds float64) flo
 	progressInBeats := progress * action.ScratchAction.DurationInBeats
 	platterPositionEnvelope := action.ScratchAction.GetEnvelope()
 	platterPositionInRevoilutions := platterPositionEnvelope.ValueAt(progressInBeats)
+	platterPositionInRevoilutions += s.platterPositionOffset
 	platterPositionInSeconds := platterPositionInRevoilutions * s.platterRevolutionDurationInSeconds
 	return platterPositionInSeconds
 }

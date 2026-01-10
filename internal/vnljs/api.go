@@ -10,9 +10,14 @@ import (
 type Api struct {
 	actions            []*vnl.ScratchAction
 	SampleFile         string
+	SampleOffset       float64
 	BeatsPerMinute     float64
 	RotationsPerMinute float64
 	randSource         *rand.Rand
+}
+
+type SampleBuilder struct {
+	api *Api
 }
 
 func (a *Api) Action() *ActionBuilder {
@@ -39,9 +44,14 @@ func (a *Api) RPM(rpm float64) *Api {
 	return a
 }
 
-func (a *Api) Sample(sampleFile string) *Api {
+func (a *Api) Sample(sampleFile string) *SampleBuilder {
 	a.SampleFile = sampleFile
-	return a
+	return &SampleBuilder{api: a}
+}
+
+func (s *SampleBuilder) Offset(offset float64) *SampleBuilder {
+	s.api.SampleOffset = offset
+	return s
 }
 
 func (a *Api) Seed(seed int64) {

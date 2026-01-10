@@ -68,11 +68,12 @@ func (s *Scratch) Init() error {
 	bpm := vnlScriptApi.BeatsPerMinute
 	rpm := vnlScriptApi.RotationsPerMinute
 	wavFile := vnlScriptApi.SampleFile
+	offset := vnlScriptApi.SampleOffset
 	if err := s.SetWavFileName(wavFile); err != nil {
 		return err
 	}
 
-	seqr, err := vnl.NewSequencerFromBpmRpm(vnlScriptApi.Actions(), bpm, rpm)
+	seqr, err := vnl.NewSequencerFromBpmRpm(vnlScriptApi.Actions(), bpm, rpm, offset)
 	if err != nil {
 		return fmt.Errorf("unable to create sequencer: %w", err)
 	}

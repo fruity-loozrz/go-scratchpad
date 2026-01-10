@@ -1,10 +1,8 @@
-sample('./audio/aaah-fresh/aaah-fresh.wav');
+sample('./audio/aaah-fresh/aaah-fresh.wav')
+    .offset(0.10);
+
 bpm(100);
 rpm(33);
-
-// TODO: implement
-// Define the 0 value of the plate at 0.23 revolutions
-shift(0.23);
 
 $()
     .platterEnvelopInBeats(
@@ -29,3 +27,10 @@ $()
             .to('InOutSine', 1, 0.2)
         )
     .faderEnvelope(micro('_-_-_-_-_-_-_', 'OutExpo'));
+
+// $()
+//     .platterEnvelopInBeats(
+//         from(0, 0.5)
+//             .to('OutSine', 3, 1)
+//         )
+//     .faderEnvelope(micro('-_-_-_-_-_-_', 'InOutSine'));
