@@ -1,6 +1,8 @@
 package vnljs
 
 import (
+	"fmt"
+
 	"github.com/fruity-loozrz/go-scratchpad/internal/microfmt"
 	"github.com/fruity-loozrz/go-scratchpad/internal/vnl"
 )
@@ -25,8 +27,17 @@ func (a *ActionBuilder) FaderPattern(pattern vnl.FaderPattern) *ActionBuilder {
 	return a
 }
 
+func (a *ActionBuilder) FaderEnvelope(env *vnl.SmoothEnvelope) *ActionBuilder {
+	a.Action.FaderEnvelope = env
+	return a
+}
+
 func (a *ActionBuilder) FaderMicro(microformat string, easing vnl.EasingType) *ActionBuilder {
-	// TODO: implement
+	envelope, err := microfmt.NewEnvelopeFromPattern(1.0, microformat, easing)
+	if err != nil {
+		panic(fmt.Sprintf("FaderMicro: invalid pattern %q: %v", microformat, err))
+	}
+	a.Action.FaderEnvelope = envelope
 	return a
 }
 

@@ -1,11 +1,12 @@
 package vnl
 
 type ScratchAction struct {
-	PlatterStart    float64      // Starting position of the platter in revolutions of the platter
-	PlatterEnd      float64      // Ending position of the platter in revolutions of the platter
-	DurationInBeats float64      // Duration of the action in beats
-	Easing          EasingType   //
-	FaderPattern    FaderPattern //
+	PlatterStart    float64         // Starting position of the platter in revolutions of the platter
+	PlatterEnd      float64         // Ending position of the platter in revolutions of the platter
+	DurationInBeats float64         // Duration of the action in beats
+	Easing          EasingType      //
+	FaderPattern    FaderPattern    //
+	FaderEnvelope   *SmoothEnvelope //
 	Envelope        *SmoothEnvelope
 }
 
@@ -33,4 +34,17 @@ func (a *ScratchAction) GetEnvelope() *SmoothEnvelope {
 	)
 
 	return a.Envelope
+}
+
+// GetFaderEnvelope returns the fader envelope of the action,
+// where the Pos is the time in beats and the Value is the gain (0...1).
+// Prefers FaderEnvelope if set, falls back to FaderPattern lookup.
+func (a *ScratchAction) GetFaderEnvelope() *SmoothEnvelope {
+	if a.FaderEnvelope != nil {
+		return a.FaderEnvelope
+	}
+
+	// Backward compatibility: look up pattern in map
+	faderEnv := FaderPatterns[a.FaderPattern]
+	return &faderEnv
 }

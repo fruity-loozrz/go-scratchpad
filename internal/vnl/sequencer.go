@@ -82,7 +82,7 @@ func (s *Sequencer) getActionAndProgressAtTime(timeInSeconds float64) (action *A
 
 func (s *Sequencer) getGainAtTime(timeInSeconds float64) (float64, error) {
 	action, progress, _ := s.getActionAndProgressAtTime(timeInSeconds)
-	faderEnvelope := FaderPatterns[action.ScratchAction.FaderPattern]
+	faderEnvelope := action.ScratchAction.GetFaderEnvelope()
 	return faderEnvelope.ValueAt(progress), nil
 }
 

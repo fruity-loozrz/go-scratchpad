@@ -3,6 +3,7 @@ package vnljs
 import (
 	"math/rand"
 
+	"github.com/fruity-loozrz/go-scratchpad/internal/microfmt"
 	"github.com/fruity-loozrz/go-scratchpad/internal/vnl"
 )
 
@@ -56,4 +57,12 @@ func (a *Api) Rand() float64 {
 
 func (a *Api) Envelope(pos, value float64) *EnvelopeBuilder {
 	return NewEnvelopeBuilder(pos, value)
+}
+
+func (a *Api) EnvelopeMicro(microFmt string, easingType vnl.EasingType) *vnl.SmoothEnvelope {
+	env, err := microfmt.NewEnvelopeFromPattern(1.0, microFmt, easingType)
+	if err != nil {
+		panic(err)
+	}
+	return env
 }

@@ -19,6 +19,7 @@ func ExecuteVnlJs(script string) (*Api, error) {
 	_ = vm.Set("seed", api.Seed)
 	_ = vm.Set("rand", api.Rand)
 	_ = vm.Set("from", api.Envelope)
+	_ = vm.Set("micro", api.EnvelopeMicro)
 
 	vm.SetFieldNameMapper(goja.UncapFieldNameMapper())
 
