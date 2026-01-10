@@ -2,6 +2,10 @@ sample('./audio/aaah-fresh/aaah-fresh.wav');
 bpm(100);
 rpm(33);
 
+// TODO: implement
+// Define the 0 value of the plate at 0.23 revolutions
+shift(0.23);
+
 $()
     .platterEnvelopInBeats(
         from(0, 0)
